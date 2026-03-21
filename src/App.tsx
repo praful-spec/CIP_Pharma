@@ -386,21 +386,21 @@ function SignInScreen({ title, subtitle, onSubmit }) {
         </div>
         <div className="sfc" style={{background:"rgba(255,255,255,0.08)",backdropFilter:"blur(20px)",borderRadius:20,padding:"32px 32px",border:"1px solid rgba(255,255,255,0.18)",boxShadow:"0 24px 64px rgba(0,0,0,0.35)"}}>
           <div style={{fontFamily:"Inter,sans-serif",fontSize:20,fontWeight:800,color:"#fff",marginBottom:4,textAlign:"center"}}>User Sign In</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,0.5)",textAlign:"center",marginBottom:24}}>Enter your details to access the platform</div>
+          
           <div style={{display:"flex",flexDirection:"column",gap:14}}>
             <div>
               <label style={lbl}>Full Name *</label>
-              <input style={inp("name")} value={form.name} onChange={set("name")} placeholder="Jane Smith"/>
+              <input style={inp("name")} value={form.name} onChange={set("name")} />
               {errors.name&&<div style={{fontSize:11,color:"#fca5a5",marginTop:3}}>{errors.name}</div>}
             </div>
             <div>
               <label style={lbl}>Company *</label>
-              <input style={inp("company")} value={form.company} onChange={set("company")} placeholder="Pharma Co. / Dairy Inc."/>
+              <input style={inp("company")} value={form.company} onChange={set("company")} />
               {errors.company&&<div style={{fontSize:11,color:"#fca5a5",marginTop:3}}>{errors.company}</div>}
             </div>
             <div>
               <label style={lbl}>Work Email *</label>
-              <input type="email" style={inp("email")} value={form.email} onChange={set("email")} placeholder="you@company.com"/>
+              <input type="email" style={inp("email")} value={form.email} onChange={set("email")} />
               {errors.email&&<div style={{fontSize:11,color:"#fca5a5",marginTop:3}}>{errors.email}</div>}
             </div>
           </div>
@@ -433,7 +433,7 @@ export default function PharmaCIP() {
 
   useEffect(()=>{ const t=setInterval(()=>setTime(new Date().toLocaleTimeString()),1000); return()=>clearInterval(t); },[]);
 
-  if(!user) return <SignInScreen title="Pharma CIP Intelligence" subtitle="GMP-Compliant CIP · 21 CFR Part 11 · FDA Ready" onSubmit={setUser}/>;
+  if(!user) return <SignInScreen title="CIP Intelligence." subtitle="GMP-Compliant CIP · 21 CFR Part 11 · FDA Ready" onSubmit={setUser}/>;
 
   const overdueCount = EQUIPMENT.filter(e=>e.cipStatus==="overdue").length;
   const dueEarlyCount = EQUIPMENT.filter(e=>e.cipStatus==="due_early").length;
