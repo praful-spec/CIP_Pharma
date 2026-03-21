@@ -326,10 +326,105 @@ function LiveCIPRun({ equipment }) {
   );
 }
 
+
+// ── Sign-in Screen ──────────────────────────────────────────────
+function SignInScreen({ title, subtitle, onSubmit }) {
+  const [form, setForm] = useState({ name:"", company:"", email:"" });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const set = k => e => setForm(p=>({...p,[k]:e.target.value}));
+
+  const validate = () => {
+    const e = {};
+    if(!form.name.trim()) e.name = "Required";
+    if(!form.company.trim()) e.company = "Required";
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email required";
+    return e;
+  };
+
+  const handleSubmit = async () => {
+    const e = validate();
+    if(Object.keys(e).length){ setErrors(e); return; }
+    setSubmitting(true);
+    try {
+      await fetch("https://formspree.io/f/xqeywrry", {
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body: JSON.stringify({
+          name:form.name, company:form.company, email:form.email,
+          _subject:`AriLinc ${title} Sign-in: ${form.name} — ${form.company}`,
+        }),
+      });
+    } catch(_){}
+    onSubmit(form);
+  };
+
+  const inp = key => ({
+    width:"100%", padding:"11px 14px", borderRadius:8, fontSize:14,
+    border:`1.5px solid ${errors[key]?"#fca5a5":"rgba(255,255,255,0.25)"}`,
+    outline:"none", fontFamily:"Inter,sans-serif", color:"#0f172a",
+    background:"#fff", marginTop:5,
+  });
+  const lbl = { fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.75)", letterSpacing:0.3 };
+
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 45%,#3b82f6 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:20,fontFamily:"Inter,sans-serif"}}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        .lb:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+        @media(max-width:480px){.sfc{padding:24px 18px!important;}}
+      `}</style>
+      <div style={{width:"100%",maxWidth:400}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <div style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:64,height:64,background:"rgba(255,255,255,0.15)",borderRadius:16,marginBottom:16,border:"1px solid rgba(255,255,255,0.25)"}}>
+            <span style={{fontSize:28}}>⚡</span>
+          </div>
+          <div style={{fontFamily:"Inter,sans-serif",fontSize:28,fontWeight:800,color:"#fff",marginBottom:4}}>AriLinc</div>
+          <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",letterSpacing:2,textTransform:"uppercase",fontWeight:600,marginBottom:8}}>{title} · by AriPrus</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,0.65)"}}>{subtitle}</div>
+        </div>
+        <div className="sfc" style={{background:"rgba(255,255,255,0.08)",backdropFilter:"blur(20px)",borderRadius:20,padding:"32px 32px",border:"1px solid rgba(255,255,255,0.18)",boxShadow:"0 24px 64px rgba(0,0,0,0.35)"}}>
+          <div style={{fontFamily:"Inter,sans-serif",fontSize:20,fontWeight:800,color:"#fff",marginBottom:4,textAlign:"center"}}>User Sign In</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,0.5)",textAlign:"center",marginBottom:24}}>Enter your details to access the platform</div>
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div>
+              <label style={lbl}>Full Name *</label>
+              <input style={inp("name")} value={form.name} onChange={set("name")} placeholder="Jane Smith"/>
+              {errors.name&&<div style={{fontSize:11,color:"#fca5a5",marginTop:3}}>{errors.name}</div>}
+            </div>
+            <div>
+              <label style={lbl}>Company *</label>
+              <input style={inp("company")} value={form.company} onChange={set("company")} placeholder="Pharma Co. / Dairy Inc."/>
+              {errors.company&&<div style={{fontSize:11,color:"#fca5a5",marginTop:3}}>{errors.company}</div>}
+            </div>
+            <div>
+              <label style={lbl}>Work Email *</label>
+              <input type="email" style={inp("email")} value={form.email} onChange={set("email")} placeholder="you@company.com"/>
+              {errors.email&&<div style={{fontSize:11,color:"#fca5a5",marginTop:3}}>{errors.email}</div>}
+            </div>
+          </div>
+          <button className="lb" onClick={handleSubmit} disabled={submitting}
+            style={{width:"100%",marginTop:28,padding:"14px",background:submitting?"rgba(255,255,255,0.15)":"#fff",color:submitting?"rgba(255,255,255,0.4)":"#1d4ed8",border:"none",borderRadius:10,fontSize:15,fontWeight:800,cursor:submitting?"not-allowed":"pointer",fontFamily:"Inter,sans-serif",transition:"all 0.2s"}}>
+            {submitting?"⏳ Launching...":"🚀 Launch Platform"}
+          </button>
+          <div style={{textAlign:"center",fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:14}}>
+            🔒 Secure · <a href="mailto:info@ariprus.com" style={{color:"rgba(255,255,255,0.6)",textDecoration:"none",fontWeight:600}}>info@ariprus.com</a>
+          </div>
+        </div>
+        <div style={{textAlign:"center",marginTop:18,fontSize:12,color:"rgba(255,255,255,0.25)"}}>
+          © 2026 AriPrus · <a href="https://ariprus.com" style={{color:"rgba(255,255,255,0.45)",textDecoration:"none"}}>ariprus.com</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ================================================================
 //  MAIN COMPONENT
 // ================================================================
 export default function PharmaCIP() {
+  const [user, setUser] = useState(null);
   const [section, setSection] = useState("equipment");
   const [selectedEq, setSelectedEq] = useState(EQUIPMENT[1]);
   const [scheduleModal, setScheduleModal] = useState(null);
@@ -337,6 +432,8 @@ export default function PharmaCIP() {
   const [time, setTime] = useState(new Date().toLocaleTimeString());
 
   useEffect(()=>{ const t=setInterval(()=>setTime(new Date().toLocaleTimeString()),1000); return()=>clearInterval(t); },[]);
+
+  if(!user) return <SignInScreen title="Pharma CIP Intelligence" subtitle="GMP-Compliant CIP · 21 CFR Part 11 · FDA Ready" onSubmit={setUser}/>;
 
   const overdueCount = EQUIPMENT.filter(e=>e.cipStatus==="overdue").length;
   const dueEarlyCount = EQUIPMENT.filter(e=>e.cipStatus==="due_early").length;
@@ -388,6 +485,8 @@ export default function PharmaCIP() {
           {dueEarlyCount>0&&<div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:6,padding:"4px 10px",fontSize:12,fontWeight:700,color:B.orange}}>⚠ {dueEarlyCount} AI Alert</div>}
           {inProgressCount>0&&<div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:6,padding:"4px 10px",fontSize:12,fontWeight:700,color:B.blue,display:"flex",alignItems:"center",gap:5}}><span style={{animation:"blink 1s infinite"}}>●</span>{inProgressCount} Running</div>}
           <div style={{fontSize:12,color:B.light}}>{time}</div>
+          <div style={{fontSize:12,color:B.light}}>👋 {user.name} · {user.company}</div>
+          <button onClick={()=>setUser(null)} style={{fontSize:11,color:B.light,background:"none",border:`1px solid ${B.border}`,borderRadius:6,padding:"4px 10px",cursor:"pointer"}}>Sign Out</button>
         </div>
       </div>
 
